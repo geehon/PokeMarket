@@ -1,0 +1,28 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container">
+	<div class="columns">
+		<div class="column col-sm-10 col-lg-8 col-6 p-centered">
+			<h2>Login Form</h2>
+			<form class="form-group" method="POST">
+				{{ form.hidden_tag() }}
+				{{ form.email.label(class_="form-label") }}
+				{{ render_field(form.email, class_="form-input", placeholder="example@gmail.com") }}
+				{{ form.password.label(class_="form-label") }}
+				{{ render_field(form.password, class_="form-input", placeholder="you'll never know") }}
+				<label class="form-checkbox my-2">
+					{{ render_field(form.remember) }}
+					<i class="form-icon"></i> Remember me?
+				</label>
+				{{ render_field(form.submit, class_="btn btn-success btn-lg input-group-btn") }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock body %}
