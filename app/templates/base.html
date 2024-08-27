@@ -17,11 +17,13 @@
 		</section>
 		<section class="navbar-center">
 		<!-- centered logo or brand -->
-		<i class="icon icon-shutdown icon-2x"></i>
+		<a href="{{ url_for('main.home') }}">
+			<i class="icon icon-shutdown icon-2x"></i>
+		</a>
 		</section>
 		<section class="navbar-section">
-			<a href="#" class="btn btn-link">Twitter</a>
-			<a href="#" class="btn btn-link">GitHub</a>
+			<a href="{{ url_for('auth.login') }}" class="btn btn-link">Login</a>
+			<a href="{{ url_for('auth.signup') }}" class="btn btn-link">Signup</a>
 		</section>
 	</header>
 	{% include "includes/message.html" ignore missing with context %}

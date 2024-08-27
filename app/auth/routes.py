@@ -4,12 +4,14 @@ from app.auth.forms import LoginForm, SignupForm, ForgetPasswordForm, UpdatePass
 from app.models import User as UserModel
 from app.auth.utils import send_email
 from flask import render_template, flash, redirect, url_for, request
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlsplit
 
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
         existingUser = db.one_or_404(
@@ -27,6 +29,8 @@ def login():
 
 @bp.route("/signup", methods=["GET", "POST"])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
     form = SignupForm()
     if form.validate_on_submit():
         newUser = UserModel(
@@ -50,6 +54,8 @@ def logout():
 
 @bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
     form = ForgetPasswordForm()
     if form.validate_on_submit():
         existingUser = db.session.scalar(
@@ -78,6 +84,8 @@ def forgot_password():
 
 @bp.route("/update-password/<token>", methods=["GET", "POST"])
 def update_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
     existingUser = UserModel.verify_reset_password_token(token)
     if not existingUser:
         return redirect(url_for("main.home"))
