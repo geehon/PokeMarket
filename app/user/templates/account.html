@@ -1,0 +1,31 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container">
+	<div class="columns">
+		<div class="column hide-sm col-3 col-ml-auto">
+			<figure class="figure">
+				<img class="img-responsive img-fit-contain" src="{{ user.get_profile_photo(300) }}" alt="User profile photo">
+				<figcaption class="figcure-caption text-center">use gravatar.com to update image.</figcaption>
+			</figure>
+		</div>
+		<div class="column col-sm-12 col-8">
+			<h2>Update User Form</h2>
+			<form class="form-group col-6" method="POST">
+				{{ form.hidden_tag() }}
+				{{ form.name.label(class_="form-label") }}
+				{{ render_field(form.name, class_="form-input", placeholder="Jeff Doe", value=user.username) }}
+				{{ form.email.label(class_="form-label") }}
+				{{ render_field(form.email, class_="form-input", placeholder="example@gmail.com", value=user.email) }}
+				{{ render_field(form.submit, class_="btn btn-success btn-lg input-group-btn my-2") }}
+				<p class="text-small">To update password, please logout and click on forgot password</p>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

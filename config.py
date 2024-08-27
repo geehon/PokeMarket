@@ -21,5 +21,4 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
     WTF_CSRF_ENABLED = False
-    MAIL_SERVER = "localhost"
-    MAIL_PORT = 8025
+    DEBUG = False  # Need this to send mail.

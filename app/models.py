@@ -7,6 +7,7 @@ import sqlalchemy.orm as so
 import sqlalchemy as sa
 import jwt
 from time import time
+from hashlib import sha256
 
 
 @login_manager.user_loader
@@ -51,3 +52,7 @@ class User(db.Model, UserMixin):
             print(e)
             return
         return db.session.get(User, _id)
+
+    def get_profile_photo(self, size=240):
+        hashed = sha256(self.email.encode()).hexdigest()
+        return f"https://www.gravatar.com/avatar/{hashed}?s={size}&d=robohash"

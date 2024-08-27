@@ -12,4 +12,4 @@ def test_update_get(app):
         res = client.get(f"/users/update/{existingUser._id}")
     assert res.request.path == f"/users/update/{existingUser._id}"
     assert res.status_code == 200
-    assert b"WIP" in res.data
+    assert b"Update User Form" in res.data

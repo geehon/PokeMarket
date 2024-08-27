@@ -10,7 +10,13 @@ class UpdateForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired()])
     submit = SubmitField("Update")
 
+    def __init__(self, original_email, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_email = original_email
+
     def validate_email(self, field):
+        if field.data.lower() == self.original_email:
+            return
         existingUser = db.session.scalar(
             db.select(UserModel)
             .where(UserModel.email == field.data.lower())

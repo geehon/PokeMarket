@@ -20,8 +20,8 @@ def login():
         )
         flash(f"User login for {existingUser.username}, is work in progress", "warning")
         login_user(existingUser, remember=form.remember.data)
-        next_page = request.args.get('next')
-        if not next_page or urlsplit(next_page).netloc != '':
+        nextPage = request.args.get('next')
+        if not nextPage or urlsplit(nextPage).netloc != '':
             nextPage = url_for('main.home')
         return redirect(nextPage)
     return render_template("login.html", title="Login Page", form=form)
