@@ -2,8 +2,11 @@ from app import db
 from app import login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from flask import current_app
 import sqlalchemy.orm as so
 import sqlalchemy as sa
+import jwt
+from time import time
 
 
 @login_manager.user_loader
@@ -32,3 +35,19 @@ class User(db.Model, UserMixin):
             return str(self._id)
         except AttributeError:
             raise NotImplementedError("No `id` attribute - override `get_id`")
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {"reset_password": self._id, "exp": time() + expires_in},
+            current_app.config["SECRET_KEY"], algorithm="HS256"
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            _id = jwt.decode(token, current_app.config["SECRET_KEY"],
+                             algorithms="HS256")["reset_password"]
+        except Exception as e:
+            print(e)
+            return
+        return db.session.get(User, _id)

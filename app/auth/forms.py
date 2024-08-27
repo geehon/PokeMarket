@@ -51,3 +51,29 @@ class SignupForm(FlaskForm):
         )
         if existingUser:
             raise ValidationError("Email already taken")
+
+
+class ForgetPasswordForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired()])
+    submit = SubmitField("Send link")
+
+    def validate_email(self, field):
+        existingUser = db.session.scalar(
+            db.select(UserModel)
+            .where(UserModel.email == field.data.lower())
+        )
+        if not existingUser:
+            raise ValidationError("No Account with this email")
+
+
+class UpdatePasswordForm(FlaskForm):
+    password = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            Length(min=4),
+            EqualTo("confirm", message="Password does not match")
+        ]
+    )
+    confirm = PasswordField("Repeat password")
+    submit = SubmitField("Update Password")
