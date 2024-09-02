@@ -1,4 +1,4 @@
-from app import db
+from app import db, Base
 from app import login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -8,6 +8,7 @@ import sqlalchemy as sa
 import jwt
 from time import time
 from hashlib import sha256
+from typing import Set, List
 
 
 @login_manager.user_loader
@@ -56,3 +57,36 @@ class User(db.Model, UserMixin):
     def get_profile_photo(self, size=240):
         hashed = sha256(self.email.encode()).hexdigest()
         return f"https://www.gravatar.com/avatar/{hashed}?s={size}&d=robohash"
+
+
+pokemonType = sa.Table(
+    'pokemon_type',
+    Base.metadata,
+    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True),
+    sa.Column('category_id', sa.Integer, sa.ForeignKey('category._id'), primary_key=True)  # noqa: E501
+)
+
+
+class Category(db.Model):
+    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, unique=True)
+    pokemons: so.Mapped[List['Pokemon']] = so.relationship(
+        secondary=pokemonType,
+        # primaryjoin=(pokemonType.c.category_id == _id),
+        # secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon._id,
+        back_populates='categories', init=False)
+
+
+class Pokemon(db.Model):
+    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    name: so.Mapped[str] = so.mapped_column(sa.String(60))
+    desc: so.Mapped[str] = so.mapped_column(sa.Text())
+    imgUrl: so.Mapped[str] = so.mapped_column(sa.String(60))
+    price: so.Mapped[float] = so.mapped_column(sa.Float(2))
+    quantity: so.Mapped[int] = so.mapped_column(sa.SmallInteger(), default=10)
+    inStock: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
+    categories: so.Mapped[List['Category']] = so.relationship(
+        secondary=pokemonType,
+        # primaryjoin=(pokemonType.c.pokemon_id == _id),
+        # secondaryjoin=lambda: pokemonType.c.category_id == Category._id,
+        back_populates='pokemons', init=False)
