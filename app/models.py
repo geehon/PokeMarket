@@ -76,6 +76,11 @@ class Category(db.Model):
         # secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon._id,
         back_populates='categories', init=False)
 
+    @staticmethod
+    def all_categories():
+        return [(c._id, c.name) for c in db.session.scalars(db.select(Category))]
+
+
 
 class Pokemon(db.Model):
     _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)

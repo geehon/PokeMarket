@@ -4,7 +4,7 @@ from app.iam.views import UserView, PokemonView, CategoryView
 from app.models import (
     User as UserModel,
     Pokemon as PokemonModel,
-    Category as CategoryModel
+    Category as CategoryModel,
 )
 
 
