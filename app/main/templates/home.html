@@ -1,0 +1,68 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="hero bg-gray my-2">
+	<div class="hero-body p-centered">
+		<h1>The Pokemon Market.</h1>
+		<p>Welcome to the Pokemon Market, This is a place where you can buy Pokemons you like.</p>
+		<p class="text-small">This is an open source application you can find its source @itsDrac/PokeMarket
+			<span class="text-tiny">If you dont find your pokemon feel free to add a Isuue in github</span>
+		</p>
+	</div>
+</div>
+<div class="container">
+	<div class="filter columns">
+		<input type="radio" id="tag-0" class="filter-tag" name="filter-radio" hidden checked>
+		<input type="radio" id="tag-1" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-2" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-3" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-4" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-5" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-6" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-7" class="filter-tag" name="filter-radio" hidden>
+		<input type="radio" id="tag-8" class="filter-tag" name="filter-radio" hidden>
+		<div class="filter-nav column col-sm-12 col-2">
+			<label class="chip" for="tag-0">All generation</label>
+			<label class="chip" for="tag-1">Gen-1</label>
+			<label class="chip" for="tag-2">Gen-2</label>
+			<label class="chip" for="tag-3">Gen-3</label>
+			<label class="chip" for="tag-4">Gen-4</label>
+			<label class="chip" for="tag-5">Gen-5</label>
+			<label class="chip" for="tag-6">Gen-6</label>
+			<label class="chip" for="tag-7">Gen-7</label>
+			<label class="chip" for="tag-8">Gen-8</label>
+		</div>
+		<div class="filter-body column col-sm-12 col-10 p-centered">
+			<div class="columns">
+				{% for pokemon in pokemons %}
+				<div class="filter-item column col-sm-12 col-4" data-tag="tag-{{ pokemon.generation }}">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title h4">{{ pokemon.name }}</div>
+							<div class="card-subtitle text-gray">Generation: {{ pokemon.generation }}</div>
+						</div>
+						<div class="card-body">
+							<img width=300 height=400 src="{{ pokemon.imgUrl }}" class="img-fit-contain">
+							<div class="divider"></div>
+							<p class="text-normal">{{ pokemon.desc|truncate(100, True, "~~~") }}</p>
+							{% for category in pokemon.categories %}
+							<span class="chip px-2">{{ category.name }}</span>
+							{% endfor %}
+						</div>
+						<div class="card-footer">
+							<a class="btn btn-success px-2 my-1" href="#">Buy now</a>
+							<a class="btn px-2 my-1" href="#">Add to cart</a>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

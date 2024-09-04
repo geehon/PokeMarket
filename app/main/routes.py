@@ -1,7 +1,12 @@
+from app import db
 from app.main import bp
+from app.models import Pokemon as PokemonModel
+from flask import render_template
 
 
 @bp.route("/")
 @bp.route("/index")
 def home():
-    return "WIP"
+    query = db.select(PokemonModel)
+    pokemons = db.session.scalars(query).all()
+    return render_template("home.html", title="Home Page", pokemons=pokemons)

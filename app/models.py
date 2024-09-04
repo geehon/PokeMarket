@@ -8,7 +8,7 @@ import sqlalchemy as sa
 import jwt
 from time import time
 from hashlib import sha256
-from typing import Set, List
+from typing import List
 
 
 @login_manager.user_loader
@@ -72,8 +72,8 @@ class Category(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, unique=True)
     pokemons: so.Mapped[List['Pokemon']] = so.relationship(
         secondary=pokemonType,
-        # primaryjoin=(pokemonType.c.category_id == _id),
-        # secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon._id,
+        primaryjoin=(pokemonType.c.category_id == _id),
+        secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon._id,
         back_populates='categories', init=False)
 
     @staticmethod
@@ -81,17 +81,20 @@ class Category(db.Model):
         return [(c._id, c.name) for c in db.session.scalars(db.select(Category))]
 
 
-
 class Pokemon(db.Model):
     _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     name: so.Mapped[str] = so.mapped_column(sa.String(60))
     desc: so.Mapped[str] = so.mapped_column(sa.Text())
-    imgUrl: so.Mapped[str] = so.mapped_column(sa.String(60))
-    price: so.Mapped[float] = so.mapped_column(sa.Float(2))
+    generation: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
+    imgUrl: so.Mapped[str] = so.mapped_column(
+        sa.String(60),
+        default="https://placehold.co/400"
+    )
+    price: so.Mapped[float] = so.mapped_column(sa.Float(2), default=10.00)
     quantity: so.Mapped[int] = so.mapped_column(sa.SmallInteger(), default=10)
     inStock: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
     categories: so.Mapped[List['Category']] = so.relationship(
         secondary=pokemonType,
-        # primaryjoin=(pokemonType.c.pokemon_id == _id),
-        # secondaryjoin=lambda: pokemonType.c.category_id == Category._id,
+        primaryjoin=(pokemonType.c.pokemon_id == _id),
+        secondaryjoin=lambda: pokemonType.c.category_id == Category._id,
         back_populates='pokemons', init=False)
