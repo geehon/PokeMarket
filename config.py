@@ -15,10 +15,10 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = "gpt.sahaj28@gmail.com"
+    SEND_ASYNC_MAIL = True
 
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
     WTF_CSRF_ENABLED = False
-    DEBUG = False  # Need this to send mail.

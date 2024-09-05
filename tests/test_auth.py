@@ -71,14 +71,14 @@ def test_forgot_password_post(app):
             .where(UserModel.email == "test1@mail.co")
         )
     with mail.record_messages() as outbox:
-        with app.test_client(user=existingUser) as client:
+        with app.test_client() as client:
             res = client.post("auth/forgot-password", data={
                 "email": existingUser.email
             })
         assert len(outbox) == 1
         assert outbox[0].subject == "Reset password for PokeMarket account"
-    assert res.status_code == 200
     assert res.request.path == "/auth/forgot-password"
+    assert res.status_code == 200
 
 
 def test_update_password_get(app):

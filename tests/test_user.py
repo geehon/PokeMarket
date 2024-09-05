@@ -13,3 +13,9 @@ def test_update_get(app):
     assert res.request.path == f"/users/update/{existingUser._id}"
     assert res.status_code == 200
     assert b"Update User Form" in res.data
+
+
+def test_home_get(app):
+    with app.test_client() as client:
+        res = client.get("/")
+    assert res.status_code == 200
