@@ -3,8 +3,8 @@
 		<div class="column col-sm-10 col-lg-8 col-6 p-centered">
 			{% with messages = get_flashed_messages(with_categories=true) %}
 				{% for category, message in messages %}
-					<div class="toast toast-{{category}}">
-						<button class="btn btn-clear float-right"></button>
+				<div id="toast-{{ loop.index }}" class="toast toast-{{category}}">
+					<button class="btn btn-clear float-right" hx-delete="{{ url_for('main.return_null') }}" hx-swap="delete" hx-target="#toast-{{ loop.index }}"></button>
 						<p class="p-centered">
 							{{ message | safe}}
 						</p>

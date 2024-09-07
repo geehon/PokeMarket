@@ -18,7 +18,7 @@ def login():
             db.select(UserModel)
             .where(UserModel.email == form.email.data)
         )
-        flash(f"User login for {existingUser.username}, is work in progress", "warning")
+        flash(f"User login for {existingUser.username}, is Loggedin.", "success")
         login_user(existingUser, remember=form.remember.data)
         nextPage = request.args.get('next')
         if not nextPage or urlsplit(nextPage).netloc != '':

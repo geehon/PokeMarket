@@ -23,6 +23,8 @@ class User(db.Model, UserMixin):
     password: so.Mapped[str] = so.mapped_column(sa.String(256),
                                                 init=False, deferred=True)
 
+    carts: so.Mapped[List['Cart']] = so.relationship(back_populates='user')
+
     def __repr__(self):
         return f"User<{self._id}|{self.username}|{self.email}>"
 
@@ -80,6 +82,17 @@ class Category(db.Model):
     def all_categories():
         return [(c._id, c.name) for c in db.session.scalars(db.select(Category))]
 
+    def __repr__(self):
+        return f"<Category({self._id}|{self.name})"
+
+
+pokemonCart = sa.Table(
+    "pokemons_carts",
+    Base.metadata,
+    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True, nullable=False),  # noqa: E501
+    sa.Column('cart_id', sa.Integer, sa.ForeignKey('cart._id'), primary_key=True, nullable=False),  # noqa: E501
+)
+
 
 class Pokemon(db.Model):
     _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
@@ -98,3 +111,17 @@ class Pokemon(db.Model):
         primaryjoin=(pokemonType.c.pokemon_id == _id),
         secondaryjoin=lambda: pokemonType.c.category_id == Category._id,
         back_populates='pokemons', init=False)
+    carts: so.Mapped[List['Cart']] = so.relationship(
+        secondary=pokemonCart, back_populates="pokemons", init=False)
+
+
+class Cart(db.Model):
+    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    name: so.Mapped[str] = so.mapped_column(sa.String(20))
+    user_id: so.Mapped['int'] = so.mapped_column(sa.ForeignKey("user._id"))
+    user: so.Mapped['User'] = so.relationship(back_populates='carts')
+    pokemons: so.Mapped[List['Pokemon']] = so.relationship(
+        secondary=pokemonCart, back_populates="carts")
+
+    def __repr__(self):
+        return f"<Cart({self._id}|{self.name}|{self.user_id})"
