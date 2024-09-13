@@ -1,7 +1,7 @@
 from app import db
 from app.models import User as UserModel
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, SubmitField
+from wtforms import StringField, EmailField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, ValidationError
 
 
@@ -23,3 +23,8 @@ class UpdateForm(FlaskForm):
         )
         if existingUser:
             raise ValidationError("Email already taken")
+
+
+class CartForm(FlaskForm):
+    _id = IntegerField("Id of cart")
+    name = StringField("Cart name", min=1, max=29)

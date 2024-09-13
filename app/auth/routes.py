@@ -1,7 +1,7 @@
 from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm, SignupForm, ForgetPasswordForm, UpdatePasswordForm
-from app.models import User as UserModel
+from app.models import User as UserModel, Cart as CartModel
 from app.auth.utils import send_email
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, login_required, current_user
@@ -39,6 +39,13 @@ def signup():
         )
         newUser.set_password(form.password.data)
         db.session.add(newUser)
+        db.session.commit()
+        #  Added default carts while creating user.
+        c1 = CartModel(name="ordered", user_id=newUser._id, user=newUser)
+        c2 = CartModel(name="saved for later", user_id=newUser._id, user=newUser)
+        c3 = CartModel(name="cart1", user_id=newUser._id, user=newUser)
+        c4 = CartModel(name="out of stock", user_id=newUser._id, user=newUser)
+        db.session.add_all([c1, c2, c3, c4])
         db.session.commit()
         flash("User registered, Please login", "success")
         return redirect(url_for("auth.login"))

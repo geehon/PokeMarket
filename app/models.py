@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     password: so.Mapped[str] = so.mapped_column(sa.String(256),
                                                 init=False, deferred=True)
 
-    carts: so.Mapped[List['Cart']] = so.relationship(back_populates='user')
+    carts: so.Mapped[List['Cart']] = so.relationship(back_populates='user', init=False)
 
     def __repr__(self):
         return f"User<{self._id}|{self.username}|{self.email}>"
@@ -114,6 +114,18 @@ class Pokemon(db.Model):
     carts: so.Mapped[List['Cart']] = so.relationship(
         secondary=pokemonCart, back_populates="pokemons", init=False)
 
+    def __repr__(self):
+        return (f"<Pokemon({self._id}|name: {self.name}|desc: {self.desc[:20]}|\
+            gen: {self.generation}|price: {self.price}|quantity: {self.quantity}|\
+            in stock: {self.inStock}")
+
+
+@sa.event.listens_for(Pokemon, 'before_update')
+def pokemon_got_updated(_mapper, _connection, target):
+    if target.quantity < 1:
+        target.inStock = False
+        #  TODO: have to move this pokemon to out of stock cart for every user.
+
 
 class Cart(db.Model):
     _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
@@ -121,7 +133,7 @@ class Cart(db.Model):
     user_id: so.Mapped['int'] = so.mapped_column(sa.ForeignKey("user._id"))
     user: so.Mapped['User'] = so.relationship(back_populates='carts')
     pokemons: so.Mapped[List['Pokemon']] = so.relationship(
-        secondary=pokemonCart, back_populates="carts")
+        secondary=pokemonCart, back_populates="carts", init=False)
 
     def __repr__(self):
-        return f"<Cart({self._id}|{self.name}|{self.user_id})"
+        return f"<Cart(_id: {self._id}|name: {self.name}|user id: {self.user_id})"
