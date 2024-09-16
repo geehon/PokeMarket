@@ -91,6 +91,7 @@ pokemonCart = sa.Table(
     Base.metadata,
     sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True, nullable=False),  # noqa: E501
     sa.Column('cart_id', sa.Integer, sa.ForeignKey('cart._id'), primary_key=True, nullable=False),  # noqa: E501
+    #  TODO: Add quantity column
 )
 
 
@@ -124,6 +125,27 @@ class Pokemon(db.Model):
 def pokemon_got_updated(_mapper, _connection, target):
     if target.quantity < 1:
         target.inStock = False
+        q = (db.select(User, Cart)
+             .join(Cart, Cart.user_id == User._id)
+             .join(pokemonCart, pokemonCart.c.cart_id == Cart._id)
+             .where(pokemonCart.c.pokemon_id == target._id)
+             .where(sa.or_(Cart.name != "ordered", Cart.name != "out of stock"))
+             #  .distinct()
+             #  .group_by(User._id)
+             )
+        results = db.session.execute(q)
+        users = set()
+        for user, cart in results:
+            users.add(user)
+            cart.remove(target)
+
+        for user in users:
+            q = (db.select(Cart)
+                 .where(Cart.user_id == user._id)
+                 .where(Cart.name == "out of stock")
+                 )
+            cart = db.session.scalar(q)
+            cart.pokemons.append(target)
         #  TODO: have to move this pokemon to out of stock cart for every user.
 
 

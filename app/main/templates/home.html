@@ -47,7 +47,7 @@
 							<div class="card-subtitle text-gray">Generation: {{ pokemon.generation }}</div>
 						</div>
 						<div class="card-body">
-							<img width=300 height=400 src="{{ pokemon.imgUrl }}" class="img-fit-contain">
+							<img src="{{ pokemon.imgUrl }}" class="img-fit-contain column">
 							<div class="divider"></div>
 							<p class="text-normal">{{ pokemon.desc|truncate(100, True, "~~~") }}</p>
 							{% for category in pokemon.categories %}
@@ -57,7 +57,10 @@
 						</div>
 						<div class="card-footer">
 							<a class="btn btn-success px-2 my-1" href="#">Buy now</a>
-							<a class="btn px-2 my-1" href="#">Add to cart</a>
+							<!-- TODO: Only view this button if user is active and pokemon is not in any cart of user -->
+							{% if current_user.is_authenticated %}
+							<button hx-put="{{ url_for('user.add_to_cart', pokemon_id=pokemon._id) }}" hx-swap="delete" class="btn px-2 my-1">Add to cart</button>
+							{% endif %}
 						</div>
 					</div>
 				</div>

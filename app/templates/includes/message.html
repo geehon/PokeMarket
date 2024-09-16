@@ -4,10 +4,10 @@
 			{% with messages = get_flashed_messages(with_categories=true) %}
 				{% for category, message in messages %}
 				<div id="toast-{{ loop.index }}" class="toast toast-{{category}}">
-					<button class="btn btn-clear float-right" hx-delete="{{ url_for('main.return_null') }}" hx-swap="delete" hx-target="#toast-{{ loop.index }}"></button>
-						<p class="p-centered">
+						<span>
 							{{ message | safe}}
-						</p>
+							<button class="btn btn-clear float-right" hx-delete="{{ url_for('main.return_null') }}" hx-swap="delete" hx-target="#toast-{{ loop.index }}"></button>
+						</span>
 					</div>
 				{% endfor %}
 			{% endwith %}

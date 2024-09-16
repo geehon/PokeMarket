@@ -1,8 +1,9 @@
 from app import db
-from app.models import User as UserModel
+from app.models import User as UserModel, Cart as CartModel
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, SubmitField, IntegerField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError, Length
+from flask_login import current_user
 
 
 class UpdateForm(FlaskForm):
@@ -26,5 +27,15 @@ class UpdateForm(FlaskForm):
 
 
 class CartForm(FlaskForm):
-    _id = IntegerField("Id of cart")
-    name = StringField("Cart name", min=1, max=29)
+    cart_id = IntegerField("Id of cart")
+    name = StringField("Cart name", validators=[DataRequired(), Length(min=2, max=29)])
+    submit = SubmitField("Add")
+
+    def validate_name(self, field):
+        existingCart = db.session.scalar(
+            db.select(CartModel)
+            .where(CartModel.user_id == current_user._id)
+            .where(CartModel.name == field.data.lower().strip())
+        )
+        if existingCart:
+            raise ValidationError("Cart name already inuse")

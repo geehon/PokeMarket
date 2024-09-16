@@ -1,0 +1,136 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container grid-lg">
+	<div class="columns">
+			<h3 class="column col-10 h3 col-md-12">All carts of {{ current_user.username }}</h3>
+			<div class="column col-2 col-md-12">
+				<a class="btn btn-success p-centered px-2" href="#model-add-cart">Add new</a>
+			</div>
+		<div class="column col-12 col-md-12">
+			{% for cart in carts %}
+			{% set stats = namespace(quantity=0, amount=0.0) %}
+			<div class="accordion">
+				<input type="checkbox" id="accordion-{{ loop.index }}" name="accordion-checkbox" hidden {% if loop.first %} checked {% endif %}>
+				<label class="accordion-header" for="accordion-{{ loop.index }}">
+					<i class="icon icon-arrow-right mr-1"></i>
+					<span class="text-bold">
+					{{ cart.name }}
+					</span>
+					{% if cart.name not in ["ordered", "saved for later", "out of stock"] %}
+					<a href="#model-rename-cart-{{ loop.index }}">
+						<i class="icon icon-edit float-right"></i>
+					</a>
+					{% endif %}
+				</label>
+				<div class="accordion-body">
+					<div class="columns">
+					<div class="column col-9 col-md-12">
+						<div class="columns">
+							<div class="column col-12">
+								{% for pokemon in cart.pokemons %}
+								<div class="columns my-2">
+									<img class="column col-4 img-fit-contain" src="{{ pokemon.imgUrl }}">
+									<div class="column col-8">
+										<h2 class="h2">{{ pokemon.name }}</h2>
+										{% if cart.name not in ["ordered", "out of stock"] %}
+										<div class="dropdown float-right">
+											<a href="#" class="btn btn-link dropdown-toggle" tabindex="0">
+												Move to cart<i class="ml-2 icon icon-caret"></i>
+											</a>
+											<ul class="menu">
+												{% for sub_cat in carts %}
+												{% if not sub_cat._id == cart._id %}
+												<li class="menu-item">
+													<a href="#" >
+														{{ sub_cat.name }}
+													</a>
+												</li>
+												{% endif %}
+												{% endfor %}
+											</ul>
+										</div>
+										{% endif %}
+										<p>Price: {{ pokemon.price }}</p> {% set stats.amount = stats.amount + pokemon.price %}
+										<p>Quantity: 1</p> {% set stats.quantity = stats.quantity + 1 %}
+										<button class="btn btn-error">Remove</button>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					{% if cart.name not in ["ordered", "out of stock"] %}
+					<div class="column col-3 col-md-12">
+						<ul class="menu my-2">
+							<h5 class="text-bold">Cart Stats</h5>
+							<li class="divider" data-content="STATS"></li>
+							<li class="menu-item">
+								<p>Total quantity: <span class="text-bold">{{ stats.quantity }}</span></p>
+							</li>
+							<li class="menu-item">
+								<p>Total amount: <span class="text-bold">{{ stats.amount }}</span></p>
+							</li>
+							<li class="menu-item">
+								<a class="btn btn-success d-block" href="#">Buy all</a>
+							</li>
+						</ul>
+					</div>
+					{% endif %}
+					</div>
+				</div>
+			</div>
+			{% if cart.name not in ["ordered", "saved for later", "out of stock"] %}
+			<!-- Cart Rename modals -->
+			<div class="modal modal-sm" id="model-rename-cart-{{ loop.index }}">
+				<a href="#close" class="modal-overlay" aria-label="Close"></a>
+				<div class="modal-container">
+					<div class="modal-header">
+						<span class="modal-title h5">Rename cart.</span>
+						<a href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
+					</div>
+					<div class="modal-body">
+						<div class="content">
+							<form class="form-group" method="POST">
+								{{ form.hidden_tag() }}
+								{{ render_field(form.cart_id, hidden="true", value=cart._id) }}
+								{{ form.name.label(class_="form-label") }}
+								{{ render_field(form.name, class_="form-input", placeholder="Water type", value=cart.name) }}
+								{{ render_field(form.submit, class_="btn btn-success input-group-btn my-2 px-2") }}
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	<!-- Cart adding modal -->
+	<div class="modal modal-sm" id="model-add-cart">
+		<a href="#close" class="modal-overlay" aria-label="Close"></a>
+		<div class="modal-container">
+			<div class="modal-header">
+				<div class="modal-title h5">Add a new cart.</div>
+				<a href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
+			</div>
+			<div class="modal-body">
+				<div class="content">
+					<form class="form-group" method="POST">
+						{{ form.hidden_tag() }}
+						{{ form.name.label(class_="form-label") }}
+						{{ render_field(form.cart_id, hidden="true", value=0) }}
+						{{ render_field(form.name, class_="form-input", placeholder="Water type") }}
+						{{ render_field(form.submit, class_="btn btn-success input-group-btn my-2 px-2") }}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
