@@ -117,12 +117,13 @@ class Pokemon(db.Model):
 
     def __repr__(self):
         return (f"<Pokemon({self._id}|name: {self.name}|desc: {self.desc[:20]}|\
-            gen: {self.generation}|price: {self.price}|quantity: {self.quantity}|\
-            in stock: {self.inStock}")
+gen: {self.generation}|price: {self.price}|quantity: {self.quantity}|\
+in stock: {self.inStock}")
 
 
-@sa.event.listens_for(Pokemon, 'before_update')
+@sa.event.listens_for(Pokemon, 'after_update')
 def pokemon_got_updated(_mapper, _connection, target):
+    return
     if target.quantity < 1:
         target.inStock = False
         q = (db.select(User, Cart)
@@ -133,11 +134,12 @@ def pokemon_got_updated(_mapper, _connection, target):
              #  .distinct()
              #  .group_by(User._id)
              )
-        results = db.session.execute(q)
-        users = set()
+        results = db.session.execute(q).all()
+        users = list()
         for user, cart in results:
-            users.add(user)
-            cart.remove(target)
+            if user not in users:
+                users.append(user)
+            cart.pokemons.remove(target)
 
         for user in users:
             q = (db.select(Cart)
@@ -147,6 +149,34 @@ def pokemon_got_updated(_mapper, _connection, target):
             cart = db.session.scalar(q)
             cart.pokemons.append(target)
         #  TODO: have to move this pokemon to out of stock cart for every user.
+
+
+@sa.event.listens_for(Pokemon.quantity, "set")
+def remove_pokemon(target, value, _oldValue, _initiator):
+    if value < 1:
+        target.inStock = False
+        q = (db.select(User, Cart)
+             .join(Cart, Cart.user_id == User._id)
+             .join(pokemonCart, pokemonCart.c.cart_id == Cart._id)
+             .where(pokemonCart.c.pokemon_id == target._id)
+             .where(sa.or_(Cart.name != "ordered", Cart.name != "out of stock"))
+             #  .distinct()
+             #  .group_by(User._id)
+             )
+        results = db.session.execute(q).all()
+        users = list()
+        for user, cart in results:
+            if user not in users:
+                users.append(user)
+            cart.pokemons.remove(target)
+
+        for user in users:
+            q = (db.select(Cart)
+                 .where(Cart.user_id == user._id)
+                 .where(Cart.name == "out of stock")
+                 )
+            cart = db.session.scalar(q)
+            cart.pokemons.append(target)
 
 
 class Cart(db.Model):
