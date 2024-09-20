@@ -121,9 +121,9 @@ gen: {self.generation}|price: {self.price}|quantity: {self.quantity}|\
 in stock: {self.inStock}")
 
 
-@sa.event.listens_for(Pokemon, 'after_update')
-def pokemon_got_updated(_mapper, _connection, target):
-    if target.quantity < 1:
+@sa.event.listens_for(Pokemon.quantity, 'set')
+def pokemon_got_updated(target, value, _oldValue, _initiator):
+    if value < 1:
         target.inStock = False
 
 
