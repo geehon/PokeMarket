@@ -60,6 +60,17 @@ class User(db.Model, UserMixin):
         hashed = sha256(self.email.encode()).hexdigest()
         return f"https://www.gravatar.com/avatar/{hashed}?s={size}&d=robohash"
 
+    def has_pokemon(self, pokemon_id):
+        cart = db.session.scalar(
+            db.select(Cart)
+            .where(Cart.user_id == self._id)
+            .where(Cart.name != "out of stock")
+            .where(Cart.name != "ordered")
+            .join(pokemonCart)
+            .where(pokemonCart.c.pokemon_id == pokemon_id)
+        )
+        return bool(cart)
+
 
 pokemonType = sa.Table(
     'pokemon_type',

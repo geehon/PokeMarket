@@ -40,7 +40,7 @@
 		<div class="filter-body column col-sm-12 col-10 p-centered">
 			<div class="columns">
 				{% for pokemon in pokemons %}
-				<div class="filter-item column col-sm-12 col-4" data-tag="tag-{{ pokemon.generation }}">
+				<div class="filter-item column col-sm-12 col-4 my-1" data-tag="tag-{{ pokemon.generation }}">
 					<div class="card">
 						<div class="card-header">
 							<div class="card-title h4">{{ pokemon.name }}</div>
@@ -59,7 +59,11 @@
 							<a class="btn btn-success px-2 my-1" href="#">Buy now</a>
 							<!-- TODO: Only view this button if user is active and pokemon is not in any cart of user -->
 							{% if current_user.is_authenticated %}
+								{% if not current_user.has_pokemon(pokemon._id) %}
 							<button hx-put="{{ url_for('user.add_to_cart', pokemon_id=pokemon._id) }}" hx-swap="delete" class="btn px-2 my-1">Add to cart</button>
+								{% else %}
+								<span class="text-muted mx-2">Allready added in <a href="{{ url_for('user.cart') }}">cart</a></span>
+								{% endif %}
 							{% endif %}
 						</div>
 					</div>
