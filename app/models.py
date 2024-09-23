@@ -71,6 +71,10 @@ class User(db.Model, UserMixin):
         )
         return bool(cart)
 
+    @property
+    def is_admin(self):
+        return self.email in current_app.config.get("ADMINS", [])
+
 
 pokemonType = sa.Table(
     'pokemon_type',

@@ -1,11 +1,20 @@
 from config import Config
-from flask import Flask
+from flask import Flask, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_mail import Mail
-from flask_admin import Admin
+from flask_admin import Admin, AdminIndexView, expose
 import sqlalchemy.orm as so
+
+
+class AdminHomeView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        if current_user.is_authenticated:
+            if current_user.is_admin:
+                return super(AdminHomeView, self).index()
+        abort(404)
 
 
 class Base(so.DeclarativeBase, so.MappedAsDataclass):
@@ -18,7 +27,7 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 mail = Mail()
-admin = Admin(name="PokeMarket")
+admin = Admin(name="PokeMarket", index_view=AdminHomeView())
 
 
 def create_app(config_class=Config):
