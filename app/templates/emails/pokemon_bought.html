@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://unpkg.com/@spectre-org/spectre-css/dist/spectre.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/@spectre-org/spectre-css/dist/spectre-exp.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/@spectre-org/spectre-css/dist/spectre-icons.min.css">
+	<title>Pokemon bought | Pokemon Market</title>
+</head>
+<body>
+	<div class="container">
+		<div class="columns">
+			<div class="column p-centered">
+				<h2>Thank you.</h2>
+			</div>
+			<div class="column">
+				<p> Dear {{current_user.username}}</p>
+				<p>I can not thank you enough for buying using my website and buying pokemon, which in reality is a great way to support me.</p>
+				<p>Here is the list of pokemons you just bought</p>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>So. No.</th>
+							<th>Pokemon Name</th>
+							<th>Pokemon genration</th>
+							<th>Pokemon price</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for pokemon in pokemons %}
+						<tr>
+							<td>{{ loop.index }}</td>
+							<td>{{ pokemon.genration }}</td>
+							<td>{{ pokemon.name }}</td>
+							<td>{{ pokemon.price }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<p>This is the razor pay payment id: {{ razorpay_id }}</p>
+				<p>Sincerely,</p>
+				<p>PokeMarket Team. :)</p>
+		</div>
+	</div>	
+</body>
+</html>

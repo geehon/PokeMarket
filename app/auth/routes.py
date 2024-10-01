@@ -72,8 +72,7 @@ def forgot_password():
         token = existingUser.get_reset_password_token()
         subject = "Reset password for PokeMarket account"
         recipients = [existingUser.email]
-        #  TODO: add textbody for reset password mail
-        text_body = "Test for sending email"
+        text_body = f"Go to below link\n { url_for('auth.update_password', token=token, _external=True)}"  # noqa: E501
         html_body = render_template(
             "emails/forgot_password.html",
             user=existingUser,

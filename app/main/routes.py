@@ -5,6 +5,7 @@ from app.models import (
     pokemonCart as PokemonCartTable,
     Cart as CartModel
 )
+from app.auth.utils import send_email
 from flask import (
     render_template,
     request,
@@ -39,6 +40,11 @@ def return_null():
     return 'use hx-swap="delete"'
 
 
+@bp.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
 @bp.route("/checkout", methods=["GET", "POST"])
 @login_required
 def checkout():
@@ -66,7 +72,6 @@ def checkout():
     payloadData = paymentDetails["notes"]
     payloadData["order_id"] = paymentDetails["id"]
     payloadData["exp"] = time() + 900
-    print(payloadData)
     token = jwt.encode(
         payloadData,
         current_app.config.get("JWT_SECRET"),
@@ -122,9 +127,20 @@ def payment_callback():
          .where(CartModel.name == "ordered")
          )
     cart = db.session.scalar(q)
+    pokemons = []
     for p_id in orderData["pokemons"]:
         p = db.get_or_404(PokemonModel, p_id)
         cart.pokemons.append(p)
+        pokemons.append(p)
     db.session.commit()
+    subject = "Pokemon bought from PokeMarket"
+    recipients = [current_user.email]
+    text_body = f"Thanks for buying pokemon, {request.form.get('razorpay_payment_id')} this is razor payment id"  # noqa: E501
+    html_body = render_template(
+        "emails/pokemon_bought.html",
+        pokemons=pokemons,
+        razorpay_id=request.form.get('razorpay_payment_id')
+    )
+    send_email(subject, recipients, text_body, html_body)
     flash(f"{current_user.username} bought pokemons", "success")
     return redirect(url_for("user.cart"))

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container grid-md">
+	<h2 class="h2 text-centered">Privacy Policy and Terms of Service.</h2>
+	<h3 class=h3>Introduction Clause</h3>
+	<p>Welcome to PokeMarket site and PokeMarket Terms page. PokeMarket an open sourced project, where you can browse the added pokemons</p>
+	<p>Users of PokeMarket can create an account by using there email address, and add any of the listed pokemons to the carts.</p>
+	<h3 class=h3>Am PokeMarket selling pokemons?</h3>
+	<p>No, PokeMarket is not a place where you are using money to buy pokemons, when you "buy" pokemon in PokeMarket is simply move that pokemon copy to one of your cart named "ordered".</p>
+	<p>You can simply think the amount you spend as a donation to repository maintainer.</p>
+	<h3 class=h3>Your public information</h3>
+	<p>PokeMarket is a public platform, anyone from anywhere can create an account and browse the added pokemons.</p>
+	<h3 class=h3>Your private information</h3>
+	<p>PokeMarket does not store your private information</p>
+	<h3 class=h3>Refunds</h3>
+	<p>Although the amount spend in PokeMarket by its users will be considered as a donation to repository maintainer, Still if user wants they can ask for refund, to do so please create a issue in github page of this repository with title "Request for refund" in the body of the issue please include</p>
+	<ul>
+		<li>Razor pay payment id</li>
+		<li>Your email address</li>
+		<li>Your phone number</li>
+		<li>Date and time when payment was made</li>
+	</ul>
+	<p>Note: PokeMarket can not asure you that full amount will be refunded, Idealy only the razor pay fee would be deducted</p>
+	<h3 class="h3">Terms of Service</h3>
+	<p>You must be at least 13 years old to use PokeMarket. PokeMarket reserves the right to suspend any user account without further notice.</p>
+	<h3 class="h3">PokeMarket Uses</h3>
+	<ul>
+		<li>Flask - A backend framework.</li>
+		<li>spector css - for UI and styling.</li>
+		<li>Github - for authentication and storing proprietary code.</li>
+		<li>AWS - for deploying our service.</li>
+		<li>Razorpay - for handling payment.</li>
+	</ul>
+	<h3 class="h3">Contact</h3>
+	<p>If you have further queries, feel free to reach out via the following:</p>
+	<p><span class="text-bold">Email: </span>gpt.sahaj28@gmail.com</p>
+	<p><span class="text-bold">X: </span>@itsSahaj</p>
+	<p><span class="text-bold">WhatsApp: </span>+91 9140365421</p>
+	<p><span class="text-bold">Optional Address: </span>U block DFL Phase 3, Gurgaon - 122002 India</p>
+</div>
+{% endblock %}

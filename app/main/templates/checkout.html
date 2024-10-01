@@ -3,6 +3,7 @@
 {% if title is defined %}
 {% block head %}
 <title>{{ title }} | Pokemon Market</title>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 {% endblock %}
 {% endif %}
 {% block body %}
@@ -29,7 +30,8 @@
 					<div class="card-subtitle text-gray">Thanks for shopping, Please click on pay button below</div>
 				</div>
 				<div class="card-body">
-					{{ paymentDetails | tojson }}
+					<p>Total pokemons buying: {{ paymentDetails.amount / 100 | abs }}</p>
+					<p>Total amount to pay: {{ paymentDetails.notes.pokemons | length }}</p>
 				</div>
 				<div class="card-footer">
 					<button id="rzp-button" class="btn btn-primary">Pay</button>
@@ -40,7 +42,6 @@
 </div>
 {% endblock %}
 {% block script %}
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 	var options = {
 		"key": "{{ key }}",
