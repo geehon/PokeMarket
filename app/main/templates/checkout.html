@@ -1,0 +1,67 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Pokemon Market</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container grid-xl">
+	<h1 class="h1">Checkout form</h1>
+	<p class="text-muted">Below are the list of pokemons you are going to buy.</p>
+	<div class="columns my-2">
+		<div class="column col-8">
+			<div class="columns my-2">
+				{% for pokemon in pokemons %}
+				<img width="200" class="column col-4 img-fit-contain" src="{{ pokemon.imgUrl }}">
+				<div class="column col-8">
+					<h2 class="h2">{{ pokemon.name }}</h2>
+					<p class="text-bold">Price: {{ pokemon.price }}</p>
+					<p>Quantity: 1</p>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="column col-4">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title h5">Checkout Form</div>
+					<div class="card-subtitle text-gray">Thanks for shopping, Please click on pay button below</div>
+				</div>
+				<div class="card-body">
+					{{ paymentDetails | tojson }}
+				</div>
+				<div class="card-footer">
+					<button id="rzp-button" class="btn btn-primary">Pay</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+	var options = {
+		"key": "{{ key }}",
+		"amount": {{ paymentDetails.amount }},
+		"currency": "INR",
+		"name": "Pokemarket",
+		"description": "Buy pokemons copy",
+		"prefill": {
+			"name": "{{ current_user.username }}",
+			"email": "{{ current_user.email }}",
+		},
+		"order_id": "{{ paymentDetails.id }}",
+		"callback_url": "{{ url_for('main.payment_callback', _external=True) }}",
+		"notes": {{ paymentDetails.notes | tojson }},
+	};
+
+	console.log(options)
+	document.getElementById('rzp-button').onclick = function(e){
+		const rzp1 = new Razorpay(options)
+		rzp1.open();
+		e.preventDefault();
+	}
+</script>
+{% endblock %}

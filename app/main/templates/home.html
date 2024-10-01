@@ -56,7 +56,7 @@
 							<p class="text-bold mt-2">Price: ₹{{ pokemon.price }}</p>
 						</div>
 						<div class="card-footer">
-							<a class="btn btn-success px-2 my-1" href="#">Buy now</a>
+							<a class="btn btn-success px-2 my-1" href="{{ url_for('main.checkout', p_id=pokemon._id)  }}">Buy now</a>
 							<!-- TODO: Only view this button if user is active and pokemon is not in any cart of user -->
 							{% if current_user.is_authenticated %}
 								{% if not current_user.has_pokemon(pokemon._id) %}

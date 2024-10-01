@@ -16,9 +16,16 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = "gpt.sahaj28@gmail.com"
     SEND_ASYNC_MAIL = True
+    RAZORPAY_CLIENT_ID = os.environ.get('RAZORPAY_CLIENT_ID') or \
+        "rzp_test_JqXOtzus5lRe3E"
+    RAZORPAY_CLIENT_SECRET = os.environ.get('RAZORPAY_CLIENT_SECRET') or \
+        "RJVqr1g8PVnZCK0Ak9WdX7nv"
+    JWT_SECRET = os.environ.get('JWT_SECRET', "its customer data")
 
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     TESTING = True
     WTF_CSRF_ENABLED = False
+    RAZORPAY_CLIENT_ID = "rzp_test_JqXOtzus5lRe3E"
+    RAZORPAY_CLIENT_SECRET = "RJVqr1g8PVnZCK0Ak9WdX7nv"
