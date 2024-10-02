@@ -130,7 +130,10 @@ def payment_callback():
     pokemons = []
     for p_id in orderData["pokemons"]:
         p = db.get_or_404(PokemonModel, p_id)
-        cart.pokemons.append(p)
+        if p in cart.pokemons:
+            update_quantity(p._id, cart._id)
+        else:
+            cart.pokemons.append(p)
         pokemons.append(p)
     db.session.commit()
     subject = "Pokemon bought from PokeMarket"
@@ -144,3 +147,13 @@ def payment_callback():
     send_email(subject, recipients, text_body, html_body)
     flash(f"{current_user.username} bought pokemons", "success")
     return redirect(url_for("user.cart"))
+
+
+def update_quantity(pokemon_id, cart_id):
+    q = (db.select(PokemonCartTable)
+         .where(PokemonCartTable.c.pokemon_id == pokemon_id)
+         .where(PokemonCartTable.c.cart_id == cart_id)
+         )
+    item = db.session.scalar(q)
+    print(item)
+    item.c.quantity += 1

@@ -34,7 +34,7 @@
 						<div class="columns">
 							<div class="column col-12">
 								{% for pokemon in cart.pokemons %}
-								<div class="columns my-2" id="cart-pokemon-{{ loop.index }}">
+								<div class="columns my-2" id="{{ cart.name }}-pokemon-{{ loop.index }}">
 									<img class="column col-4 img-fit-contain" src="{{ pokemon.imgUrl }}">
 									<div class="column col-8">
 										<h2 class="h2">{{ pokemon.name }}</h2>
@@ -59,7 +59,7 @@
 										<p>Price: {{ pokemon.price }}</p> {% set stats.amount = stats.amount + pokemon.price %}
 										<p>Quantity: 1</p> {% set stats.quantity = stats.quantity + 1 %}
 										{% if not cart.name == "ordered" %}
-										<button class="btn btn-error" hx-delete="{{ url_for('user.remove_from_cart', pokemon_id=pokemon._id, cart_id=cart._id) }}" hx-swap="delete" hx-target="#cart-pokemon-{{ loop.index }}">Remove</button>
+										<button class="btn btn-error" hx-delete="{{ url_for('user.remove_from_cart', pokemon_id=pokemon._id, cart_id=cart._id) }}" hx-swap="delete" hx-target="#{{ cart.name }}-pokemon-{{ loop.index }}">Remove</button>
 										{% endif %}
 									</div>
 								</div>

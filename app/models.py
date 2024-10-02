@@ -106,7 +106,7 @@ pokemonCart = sa.Table(
     Base.metadata,
     sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True, nullable=False),  # noqa: E501
     sa.Column('cart_id', sa.Integer, sa.ForeignKey('cart._id'), primary_key=True, nullable=False),  # noqa: E501
-    #  TODO: Add quantity column
+    sa.Column('quantity', sa.Integer, default=1)
 )
 
 
