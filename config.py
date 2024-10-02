@@ -7,7 +7,7 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or "you'll never know"
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI') or \
-        "sqlite:///debug.db"
+            "sqlite:///debug.db"
     ADMINS = ['gpt.sahaj28@gmail.com']
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
