@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  # Postgress database
+  pgdb:
+    image: postgres:17
+    container_name: database
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  # Flask App.
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      DATABASE_URI: "postgresql+psycopg2://postgres:${DB_PASSWORD}@database/postgres"
+      MAIL_SERVER: "smtp.googlemail.com"
+      MAIL_PORT: 587
+      MAIL_USE_TLS: 1
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      RAZORPAY_CLIENT_ID: ${RAZORPAY_CLIENT_ID}
+      RAZORPAY_CLIENT_SECRET: ${RAZORPAY_CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      SECRET_KEY: ${SECRET_KEY}
+    depends_on:
+      - pgdb
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
