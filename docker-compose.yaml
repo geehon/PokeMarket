@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     environment:
-      DATABASE_URI: "postgresql+psycopg2://postgres:${DB_PASSWORD}@database/postgres"
+      DATABASE_URI: "postgresql+psycopg2://postgres:${DB_PASSWORD}@pgdb/postgres"
       MAIL_SERVER: "smtp.googlemail.com"
       MAIL_PORT: 587
       MAIL_USE_TLS: 1
@@ -37,9 +37,29 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     depends_on:
       - pgdb
-    ports:
-      - "5000:5000"
     restart: unless-stopped
+  
+  # Nginx container.
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: nginx:1.27
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  # Certbot container.
+  certbot:
+    image: certbot/certbot:v2.11.0
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email gpt.sahaj28@gmail.com -d pokemarket.in -d www.pokemarket.in --agree-tos
 
 volumes:
   pgdata:
