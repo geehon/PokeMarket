@@ -37,6 +37,14 @@
 			<label class="chip" for="tag-6">Gen-6</label>
 			<label class="chip" for="tag-7">Gen-7</label>
 			<label class="chip" for="tag-8">Gen-8</label>
+			<ul class="pagination">
+				<li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+					<a href="{{ url_for('main.home', current_page=current_page-1) }}">Prev</a>
+				</li>
+				<li class="page-item active">
+					<a href="{{ url_for('main.home', current_page=current_page+1) }}">Next</a>
+				</li>
+			</ul>
 		</div>
 		<div class="filter-body column col-sm-12 col-10 p-centered">
 			<div class="columns">

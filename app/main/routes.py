@@ -29,10 +29,15 @@ client = rp.Client(auth=(ID, SECRET))
 
 @bp.route("/")
 @bp.route("/index")
-def home():
-    query = db.select(PokemonModel)
+def home(current_page=1):
+    query = db.select(PokemonModel).limit(9).offset(9 * (current_page - 1))
     pokemons = db.session.scalars(query).all()
-    return render_template("home.html", title="Home Page", pokemons=pokemons)
+    return render_template(
+        "home.html",
+        title="Home Page",
+        pokemons=pokemons,
+        current_page=current_page
+    )
 
 
 @bp.route("/return-null", methods=["DELETE"])
@@ -155,5 +160,4 @@ def update_quantity(pokemon_id, cart_id):
          .where(PokemonCartTable.c.cart_id == cart_id)
          )
     item = db.session.scalar(q)
-    print(item)
     item.c.quantity += 1
