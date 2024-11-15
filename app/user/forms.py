@@ -34,7 +34,7 @@ class CartForm(FlaskForm):
     def validate_name(self, field):
         existingCart = db.session.scalar(
             db.select(CartModel)
-            .where(CartModel.user_id == current_user._id)
+            .where(CartModel.user_id == current_user.id)
             .where(CartModel.name == field.data.lower().strip())
         )
         if existingCart:

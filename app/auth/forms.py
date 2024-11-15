@@ -26,8 +26,9 @@ class LoginForm(FlaskForm):
             .where(UserModel.email == self.email.data.lower())
         )
 
-        if not existingUser.check_password(field.data):
-            raise ValidationError("Incorrect password")
+        if existingUser:
+            if not existingUser.check_password(field.data):
+                raise ValidationError("Incorrect password")
 
 
 class SignupForm(FlaskForm):

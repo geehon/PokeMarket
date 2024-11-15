@@ -17,7 +17,7 @@ def load_user(userId):
 
 
 class User(db.Model, UserMixin):
-    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     username: so.Mapped[str] = so.mapped_column(sa.String(50))
     email: so.Mapped[str] = so.mapped_column(sa.String(50), index=True, unique=True)
     password: so.Mapped[str] = so.mapped_column(sa.String(256),
@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     carts: so.Mapped[List['Cart']] = so.relationship(back_populates='user', init=False)
 
     def __repr__(self):
-        return f"User<{self._id}|{self.username}|{self.email}>"
+        return f"User<{self.id}|{self.username}|{self.email}>"
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -34,15 +34,9 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def get_id(self):
-        try:
-            return str(self._id)
-        except AttributeError:
-            raise NotImplementedError("No `id` attribute - override `get_id`")
-
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
-            {"reset_password": self._id, "exp": time() + expires_in},
+            {"reset_password": self.id, "exp": time() + expires_in},
             current_app.config["SECRET_KEY"], algorithm="HS256"
         )
 
@@ -63,7 +57,7 @@ class User(db.Model, UserMixin):
     def has_pokemon(self, pokemon_id):
         cart = db.session.scalar(
             db.select(Cart)
-            .where(Cart.user_id == self._id)
+            .where(Cart.user_id == self.id)
             .where(Cart.name != "out of stock")
             .where(Cart.name != "ordered")
             .join(pokemonCart)
@@ -147,7 +141,7 @@ def remove_pokemon(target, value, _oldValue, _initiator):
     if value:
         return
     q = (db.select(User, Cart)
-         .join(Cart, Cart.user_id == User._id)
+         .join(Cart, Cart.user_id == User.id)
          .join(pokemonCart, pokemonCart.c.cart_id == Cart._id)
          .where(pokemonCart.c.pokemon_id == target._id)
          .where(sa.or_(Cart.name != "ordered", Cart.name != "out of stock"))
@@ -163,7 +157,7 @@ def remove_pokemon(target, value, _oldValue, _initiator):
 
     for user in users:
         q = (db.select(Cart)
-             .where(Cart.user_id == user._id)
+             .where(Cart.user_id == user.id)
              .where(Cart.name == "out of stock")
              )
         cart = db.session.scalar(q)
@@ -173,7 +167,7 @@ def remove_pokemon(target, value, _oldValue, _initiator):
 class Cart(db.Model):
     _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     name: so.Mapped[str] = so.mapped_column(sa.String(20))
-    user_id: so.Mapped['int'] = so.mapped_column(sa.ForeignKey("user._id"))
+    user_id: so.Mapped['int'] = so.mapped_column(sa.ForeignKey("user.id"))
     user: so.Mapped['User'] = so.relationship(back_populates='carts')
     pokemons: so.Mapped[List['Pokemon']] = so.relationship(
         secondary=pokemonCart, back_populates="carts", init=False)

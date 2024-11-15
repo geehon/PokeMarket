@@ -29,7 +29,8 @@ client = rp.Client(auth=(ID, SECRET))
 
 @bp.route("/")
 @bp.route("/index")
-def home(current_page=1):
+def home():
+    current_page = int(request.args.get("current_page", 1))
     query = db.select(PokemonModel).limit(9).offset(9 * (current_page - 1))
     pokemons = db.session.scalars(query).all()
     return render_template(
@@ -128,7 +129,7 @@ def payment_callback():
         flash("Payment was not successfull, please try again.", "error")
         return redirect(url_for("main.home"))
     q = (db.select(CartModel)
-         .where(CartModel.user_id == current_user._id)
+         .where(CartModel.user_id == current_user.id)
          .where(CartModel.name == "ordered")
          )
     cart = db.session.scalar(q)

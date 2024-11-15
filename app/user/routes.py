@@ -39,7 +39,7 @@ def cart():
         else:
             newCart = CartModel(
                 name=form.name.data,
-                user_id=current_user._id,
+                user_id=current_user.id,
                 user=current_user
             )
             db.session.add(newCart)
@@ -70,7 +70,7 @@ def add_to_cart(pokemon_id):
 @login_required
 def remove_from_cart(pokemon_id, cart_id):
     cart = db.get_or_404(CartModel, cart_id)
-    if not cart.user_id == current_user._id:
+    if not cart.user_id == current_user.id:
         return "User does not own this cart", 403
     pokemon = db.get_or_404(PokemonModel, pokemon_id)
     cart.pokemons.remove(pokemon)
