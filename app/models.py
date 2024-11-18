@@ -43,12 +43,13 @@ class User(db.Model, UserMixin):
     @staticmethod
     def verify_reset_password_token(token):
         try:
-            _id = jwt.decode(token, current_app.config["SECRET_KEY"],
-                             algorithms="HS256")["reset_password"]
-        except Exception as e:
-            print(e)
+            user_id = jwt.decode(
+                token, current_app.config["SECRET_KEY"],
+                algorithms="HS256"
+            )["reset_password"]
+        except Exception:
             return
-        return db.session.get(User, _id)
+        return db.session.get(User, user_id)
 
     def get_profile_photo(self, size=240):
         hashed = sha256(self.email.encode()).hexdigest()
@@ -73,39 +74,39 @@ class User(db.Model, UserMixin):
 pokemonType = sa.Table(
     'pokemon_type',
     Base.metadata,
-    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True),
-    sa.Column('category_id', sa.Integer, sa.ForeignKey('category._id'), primary_key=True)  # noqa: E501
+    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon.id'), primary_key=True),
+    sa.Column('category_id', sa.Integer, sa.ForeignKey('category.id'), primary_key=True)  # noqa: E501
 )
 
 
 class Category(db.Model):
-    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, unique=True)
     pokemons: so.Mapped[List['Pokemon']] = so.relationship(
         secondary=pokemonType,
-        primaryjoin=(pokemonType.c.category_id == _id),
-        secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon._id,
+        primaryjoin=(pokemonType.c.category_id == id),
+        secondaryjoin=lambda: pokemonType.c.pokemon_id == Pokemon.id,
         back_populates='categories', init=False)
 
     @staticmethod
     def all_categories():
-        return [(c._id, c.name) for c in db.session.scalars(db.select(Category))]
+        return [(c.id, c.name) for c in db.session.scalars(db.select(Category))]
 
     def __repr__(self):
-        return f"<Category({self._id}|{self.name})"
+        return f"<Category({self.id}|{self.name})"
 
 
 pokemonCart = sa.Table(
     "pokemons_carts",
     Base.metadata,
-    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon._id'), primary_key=True, nullable=False),  # noqa: E501
-    sa.Column('cart_id', sa.Integer, sa.ForeignKey('cart._id'), primary_key=True, nullable=False),  # noqa: E501
+    sa.Column('pokemon_id', sa.Integer, sa.ForeignKey('pokemon.id'), primary_key=True, nullable=False),  # noqa: E501
+    sa.Column('cart_id', sa.Integer, sa.ForeignKey('cart.id'), primary_key=True, nullable=False),  # noqa: E501
     sa.Column('quantity', sa.Integer, default=1)
 )
 
 
 class Pokemon(db.Model):
-    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     name: so.Mapped[str] = so.mapped_column(sa.String(60))
     desc: so.Mapped[str] = so.mapped_column(sa.Text())
     generation: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
@@ -118,14 +119,14 @@ class Pokemon(db.Model):
     inStock: so.Mapped[bool] = so.mapped_column(sa.Boolean(), default=False)
     categories: so.Mapped[List['Category']] = so.relationship(
         secondary=pokemonType,
-        primaryjoin=(pokemonType.c.pokemon_id == _id),
-        secondaryjoin=lambda: pokemonType.c.category_id == Category._id,
+        primaryjoin=(pokemonType.c.pokemon_id == id),
+        secondaryjoin=lambda: pokemonType.c.category_id == Category.id,
         back_populates='pokemons', init=False)
     carts: so.Mapped[List['Cart']] = so.relationship(
         secondary=pokemonCart, back_populates="pokemons", init=False)
 
     def __repr__(self):
-        return (f"<Pokemon({self._id}|name: {self.name}|desc: {self.desc[:20]}|\
+        return (f"<Pokemon({self.id}|name: {self.name}|desc: {self.desc[:20]}|\
 gen: {self.generation}|price: {self.price}|quantity: {self.quantity}|\
 in stock: {self.inStock}")
 
@@ -142,11 +143,11 @@ def remove_pokemon(target, value, _oldValue, _initiator):
         return
     q = (db.select(User, Cart)
          .join(Cart, Cart.user_id == User.id)
-         .join(pokemonCart, pokemonCart.c.cart_id == Cart._id)
-         .where(pokemonCart.c.pokemon_id == target._id)
+         .join(pokemonCart, pokemonCart.c.cart_id == Cart.id)
+         .where(pokemonCart.c.pokemon_id == target.id)
          .where(sa.or_(Cart.name != "ordered", Cart.name != "out of stock"))
          #  .distinct()
-         #  .group_by(User._id)
+         #  .group_by(User.id)
          )
     results = db.session.execute(q).all()
     users = list()
@@ -165,7 +166,7 @@ def remove_pokemon(target, value, _oldValue, _initiator):
 
 
 class Cart(db.Model):
-    _id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
     name: so.Mapped[str] = so.mapped_column(sa.String(20))
     user_id: so.Mapped['int'] = so.mapped_column(sa.ForeignKey("user.id"))
     user: so.Mapped['User'] = so.relationship(back_populates='carts')
@@ -173,4 +174,4 @@ class Cart(db.Model):
         secondary=pokemonCart, back_populates="carts", init=False)
 
     def __repr__(self):
-        return f"<Cart(_id: {self._id}|name: {self.name}|user id: {self.user_id})"
+        return f"<Cart(id: {self.id}|name: {self.name}|user id: {self.user_id})"

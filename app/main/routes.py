@@ -99,7 +99,7 @@ def get_payment_data(pokemons):
     notes = {"pokemons": []}
     for pokemon in pokemons:
         amount += int(pokemon.price) * 100
-        notes["pokemons"].append(pokemon._id)
+        notes["pokemons"].append(pokemon.id)
     data["amount"] = amount
     data["notes"] = notes
     return data
@@ -137,7 +137,7 @@ def payment_callback():
     for p_id in orderData["pokemons"]:
         p = db.get_or_404(PokemonModel, p_id)
         if p in cart.pokemons:
-            update_quantity(p._id, cart._id)
+            update_quantity(p.id, cart.id)
         else:
             cart.pokemons.append(p)
         pokemons.append(p)

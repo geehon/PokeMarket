@@ -28,7 +28,7 @@ def update(userId):
 def cart():
     query = (db.select(CartModel)
              .where(CartModel.user == current_user)
-             .order_by(CartModel._id.desc()))
+             .order_by(CartModel.id.desc()))
     carts = db.session.scalars(query).all()
     form = CartForm()
     if form.validate_on_submit():
@@ -58,7 +58,7 @@ def cart():
 def add_to_cart(pokemon_id):
     query = (db.select(CartModel)
              .where(CartModel.user == current_user)
-             .order_by(CartModel._id.desc()))
+             .order_by(CartModel.id.desc()))
     cart = db.session.scalar(query)
     pokemon = db.get_or_404(PokemonModel, pokemon_id)
     cart.pokemons.append(pokemon)

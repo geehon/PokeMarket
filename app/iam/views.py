@@ -19,7 +19,7 @@ class UserView(ModelView):
 class PokemonView(ModelView):
     page_size = 50
     column_list = [
-        PokemonModel._id,
+        PokemonModel.id,
         PokemonModel.name,
         PokemonModel.price,
         PokemonModel.quantity,
@@ -34,7 +34,7 @@ class PokemonView(ModelView):
 
     def list_choices():
         return [
-            (c._id, c.name)
+            (c.id, c.name)
             for c in db.session.scalars(db.select(CategoryModel)).all()
         ]
 
@@ -43,7 +43,7 @@ class PokemonView(ModelView):
             return v
         category = db.session.scalar(
             db.select(CategoryModel)
-            .where(CategoryModel._id == v)
+            .where(CategoryModel.id == v)
         )
         return category
     form_extra_fields = {

@@ -45,7 +45,7 @@
 											</a>
 											<ul class="menu">
 												{% for sub_cat in carts %}
-												{% if not sub_cat._id == cart._id %}
+												{% if not sub_cat.id == cart.id %}
 												<li class="menu-item">
 													<a href="#" >
 														{{ sub_cat.name }}
@@ -59,7 +59,7 @@
 										<p>Price: {{ pokemon.price }}</p> {% set stats.amount = stats.amount + pokemon.price %}
 										<p>Quantity: 1</p> {% set stats.quantity = stats.quantity + 1 %}
 										{% if not cart.name == "ordered" %}
-										<button class="btn btn-error" hx-delete="{{ url_for('user.remove_from_cart', pokemon_id=pokemon._id, cart_id=cart._id) }}" hx-swap="delete" hx-target="#{{ cart.name }}-pokemon-{{ loop.index }}">Remove</button>
+										<button class="btn btn-error" hx-delete="{{ url_for('user.remove_from_cart', pokemon_id=pokemon.id, cart_id=cart.id) }}" hx-swap="delete" hx-target="#{{ cart.name }}-pokemon-{{ loop.index }}">Remove</button>
 										{% endif %}
 									</div>
 								</div>
@@ -79,7 +79,7 @@
 								<p>Total amount: <span class="text-bold">{{ stats.amount }}</span></p>
 							</li>
 							<li class="menu-item">
-								<a class="btn btn-success d-block" href="{{ url_for('main.checkout', c_id=cart._id)  }}">Buy all</a>
+								<a class="btn btn-success d-block" href="{{ url_for('main.checkout', c_id=cart.id)  }}">Buy all</a>
 							</li>
 						</ul>
 					</div>
@@ -100,7 +100,7 @@
 						<div class="content">
 							<form class="form-group" method="POST">
 								{{ form.hidden_tag() }}
-								{{ render_field(form.cart_id, hidden="true", value=cart._id) }}
+								{{ render_field(form.cart_id, hidden="true", value=cart.id) }}
 								{{ form.name.label(class_="form-label") }}
 								{{ render_field(form.name, class_="form-input", placeholder="Water type", value=cart.name) }}
 								{{ render_field(form.submit, class_="btn btn-success input-group-btn my-2 px-2") }}
