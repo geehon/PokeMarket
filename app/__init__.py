@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from flask_admin import Admin, AdminIndexView, expose
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import sqlalchemy.orm as so
 
 
@@ -28,6 +30,7 @@ login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 mail = Mail()
 admin = Admin(name="PokeMarket", index_view=AdminHomeView())
+limiter = Limiter(key_func=get_remote_address, default_limits=["50 per hour"])
 
 
 def create_app(config_class=Config):
@@ -38,6 +41,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     admin.init_app(app)
     migrate.init_app(app, db)
+    limiter.init_app(app)
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
     from app.auth import bp as auth_bp
