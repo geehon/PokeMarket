@@ -60,6 +60,8 @@
 										<p>Quantity: 1</p> {% set stats.quantity = stats.quantity + 1 %}
 										{% if not cart.name == "ordered" %}
 										<button class="btn btn-error" hx-delete="{{ url_for('user.remove_from_cart', pokemon_id=pokemon.id, cart_id=cart.id) }}" hx-swap="delete" hx-target="#{{ cart.name }}-pokemon-{{ loop.index }}">Remove</button>
+										{% else %}
+										<a download class="btn btn-success" href="{{ url_for('main.download_pokemon', pokemon_id=pokemon.id) }}">Download</a>
 										{% endif %}
 									</div>
 								</div>

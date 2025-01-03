@@ -13,11 +13,14 @@ from flask import (
     url_for,
     flash,
     session,
-    current_app
+    current_app,
+    send_file
 )
 from flask_login import login_required, current_user
 from time import time
 import razorpay as rp
+import requests as rq
+import io
 import os
 import jwt
 
@@ -162,3 +165,17 @@ def update_quantity(pokemon_id, cart_id):
          )
     item = db.session.scalar(q)
     item.c.quantity += 1
+
+
+@bp.route("/download-pokemon")
+@login_required
+def download_pokemon():
+    pokemon_id = request.args.get("pokemon_id")
+    if not pokemon_id:
+        return "No Pokemon found"
+    pokemon = current_user.get_ordered_pokemon(pokemon_id)
+    if not pokemon:
+        return "No Pokemon found"
+    data = rq.get(pokemon.imgUrl)
+    image = io.BytesIO(data.content)
+    return send_file(image, as_attachment=True, download_name=f"{pokemon.name}.jpg")
